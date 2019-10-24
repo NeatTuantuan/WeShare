@@ -6,6 +6,8 @@ import com.edu.xd.entity.Product;
 import com.edu.xd.utils.RedisUtils;
 import com.edu.xd.utils.SerializeUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,7 +37,9 @@ public class ProductController {
     /**
      * 添加产品
      */
+    @ApiOperation(value = "添加产品")
     @PostMapping(value = "/product/addProduct")
+    @ApiImplicitParam(name = "product", value = "产品实体类")
     public ResponseResult addProduct(@RequestBody Product product){
         boolean addSuccess = redisUtils.set(product.getProductID(),serializeUtil.serialize(product));
         if (addSuccess) {
@@ -55,6 +59,8 @@ public class ProductController {
      *根据产品id删除产品
      */
     @PostMapping(value = "/product/deleteProduct")
+    @ApiImplicitParam(name = "productID", value = "产品ID")
+    @ApiOperation(value = "添加删除商品")
     public ResponseResult deleteProduct(@RequestParam String productID){
 
         byte[] productBytes = redisUtils.get(productID);
@@ -79,6 +85,8 @@ public class ProductController {
      * 修改产品信息
      */
     @RequestMapping(value = "/product/modifyProduct",method = {RequestMethod.POST})
+    @ApiImplicitParam(name = "product", value = "产品实体")
+    @ApiOperation(value = "修改产品信息")
     public ResponseResult modifyProduct(@RequestBody Product product){
         boolean modifySuccess = redisUtils.set(product.getProductID(),serializeUtil.serialize(product));
         if (modifySuccess) {
@@ -99,6 +107,8 @@ public class ProductController {
      * 查看某一产品
      */
     @RequestMapping(value = "/product/getProductInfo",method = {RequestMethod.GET})
+    @ApiImplicitParam(name = "productID", value = "产品ID")
+    @ApiOperation(value = "获取产品信息（单个产品）")
     public ResponseResult getProductInfo(@RequestParam String productID){
         byte[] bytes = redisUtils.get(productID);
         Product product = (Product) serializeUtil.unserialize(bytes);
@@ -122,6 +132,7 @@ public class ProductController {
      * 查看所有信息
      */
     @RequestMapping(value = "/product/getAllProductInfo",method = {RequestMethod.GET})
+    @ApiOperation(value = "获取产品信息（所有产品）")
     public ResponseResult getAllProductsInfo(){
         //创建value集合
         List<Product> values = new ArrayList<>();
@@ -162,6 +173,8 @@ public class ProductController {
      * 根据关键字查询产品
      */
     @RequestMapping(value = "/product/getProductInfoByKeyword",method = {RequestMethod.GET})
+    @ApiImplicitParam(name = "keyWord", value = "关键字")
+    @ApiOperation(value = "根据关键字查询产品")
     public ResponseResult getProductInfoByKeyWord(@RequestParam String keyWord){
         //拿到所有产品
         HashMap<String,byte[]> map = redisUtils.getAll();
