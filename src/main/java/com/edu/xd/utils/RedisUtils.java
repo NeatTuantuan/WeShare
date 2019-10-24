@@ -1,9 +1,11 @@
 package com.edu.xd.utils;
 
+import com.edu.xd.entity.Product;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * @ClassName RedisUtils
@@ -69,4 +71,25 @@ public class RedisUtils {
         }
         return result;
     }
+
+    /**
+     * 获取所有缓存
+     */
+    public LinkedHashMap<String,byte[]> getAll(){
+        //获得所有key
+        Set<String> keys = redisTemplate.keys("*");
+        //key-value集合
+        LinkedHashMap<String,byte[]> map = new LinkedHashMap<>();
+        //循环
+        for (String key:keys){
+            //获得key对应的value
+            byte[] value = redisTemplate.opsForValue().get(key);
+            map.put(key,value);
+        }
+        return map;
+    }
+
+
+
+
 }
