@@ -39,7 +39,7 @@ public class ProductController {
      */
     @ApiOperation(value = "添加产品")
     @PostMapping(value = "/product/addProduct")
-    @ApiImplicitParam(name = "product", value = "产品实体类")
+//    @ApiImplicitParam(name = "product", value = "产品实体类")
     public ResponseResult addProduct(@RequestBody Product product){
         boolean addSuccess = redisUtils.set(product.getProductID(),serializeUtil.serialize(product));
         if (addSuccess) {
@@ -85,7 +85,7 @@ public class ProductController {
      * 修改产品信息
      */
     @RequestMapping(value = "/product/modifyProduct",method = {RequestMethod.POST})
-    @ApiImplicitParam(name = "product", value = "产品实体")
+//    @ApiImplicitParam(name = "product", value = "产品实体")
     @ApiOperation(value = "修改产品信息")
     public ResponseResult modifyProduct(@RequestBody Product product){
         boolean modifySuccess = redisUtils.set(product.getProductID(),serializeUtil.serialize(product));
