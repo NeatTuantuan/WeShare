@@ -3,17 +3,18 @@ package com.edu.xd.controller.productController;
 
 import com.edu.xd.controller.response.ResponseResult;
 import com.edu.xd.entity.Product;
+import com.edu.xd.utils.JedisUtil;
 import com.edu.xd.utils.RedisUtils;
 import com.edu.xd.utils.SerializeUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import redis.clients.jedis.Jedis;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName ProductController
@@ -32,6 +33,9 @@ public class ProductController {
     RedisUtils redisUtils;
     @Autowired
     SerializeUtil serializeUtil;
+
+    @Autowired
+    JedisUtil jedisUtil;
 
 
     /**
@@ -205,5 +209,33 @@ public class ProductController {
 
 
     }
+
+    @ApiOperation(value = "redis消息队列消费者消费消息")
+    @GetMapping(value = "/product/redisConsumer")
+    public ResponseResult redisConsumer(){
+        String message[] = new String[3];
+        String temp = jedisUtil.consumerMessage("testList");
+        message = temp.split(" ");
+
+
+        responseResult.setSuccess(true);
+        responseResult.setMessage(ProductCode.PRODUCT_GETREDISMESSAGEQUEUE_SUCCESS.getMessage());
+        responseResult.setCode(ProductCode.PRODUCT_GETREDISMESSAGEQUEUE_SUCCESS.getCode());
+        responseResult.setData(message);
+        return responseResult;
+    }
+
+//        List<String> list = Arrays.asList(new String[]{"猿医生", "CD", "yys"});
+//
+//
+//    @RequestMapping("/product/sendMessage")
+//    public String sendMessage(){
+//
+//        for (String message : list){
+//            redisUtils.lpush("testList",serializeUtil.serialize(message));
+//        }
+//        return "success";
+//    }
+
 
 }

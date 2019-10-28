@@ -11,7 +11,8 @@ public enum ProductCode {
     PRODUCT_GETPRODUCTINFO_FAIL("2004","查询产品信息失败"),
     PRODUCT_GETALLPRODUCT_SUCCESS("1005","查询所有产品成功"),
     PRODUCT_GETPRODUCTBYKEYWORD_SUCCESS("1006","关键字查询产品成功"),
-    PRODUCT_GETPRODUCTBYKEYWORD_FAIL("2006","关键字查询产品失败");
+    PRODUCT_GETPRODUCTBYKEYWORD_FAIL("2006","关键字查询产品失败"),
+    PRODUCT_GETREDISMESSAGEQUEUE_SUCCESS("1007","查询消息队列数据成功");
 
     private String code;
     private String message;

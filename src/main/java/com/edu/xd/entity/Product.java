@@ -1,5 +1,6 @@
 package com.edu.xd.entity;
 
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.util.List;
  * @Attention Copyright (C)，2004-2019，BDILab，XiDian University
  **/
 @Component
+@Data
 public class Product implements Serializable {
     /**
      * 产品ID（唯一标识一个产品）

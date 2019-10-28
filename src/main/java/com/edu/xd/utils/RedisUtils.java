@@ -1,11 +1,14 @@
 package com.edu.xd.utils;
 
 import com.edu.xd.entity.Product;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName RedisUtils
@@ -18,7 +21,11 @@ import java.util.*;
 @Component
 public class RedisUtils {
     @Resource
+    @Autowired
     private RedisTemplate<String, byte[]> redisTemplate;
+//    @Autowired
+//    JedisConnectionFactory connectionFactory ;
+
 
     /**
      * 读取缓存
@@ -87,6 +94,70 @@ public class RedisUtils {
             map.put(key,value);
         }
         return map;
+    }
+
+
+    /**
+     * 取值 - <brpop：阻塞式>
+     * @param key 键
+     * @param timeout 超时时间
+     * @param timeUnit 给定单元粒度的时间段
+     *                 TimeUnit.DAYS          //天
+     *                 TimeUnit.HOURS         //小时
+     *                 TimeUnit.MINUTES       //分钟
+     *                 TimeUnit.SECONDS       //秒
+     *                 TimeUnit.MILLISECONDS  //毫秒
+     * @return
+     */
+    @SuppressWarnings("resource")
+    public byte[] brpop(String key, long timeout, TimeUnit timeUnit) {
+//        connectionFactory.setDatabase(1);
+//        redisTemplate.setConnectionFactory(connectionFactory);
+        try {
+            return redisTemplate.opsForList().rightPop(key, timeout, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * 取值 - <rpop：非阻塞式>
+     * @param key 键
+     * @return
+     */
+    @SuppressWarnings("resource")
+    public byte[] rpop(String key) {
+//        connectionFactory.setDatabase(1);
+//        redisTemplate.setConnectionFactory(connectionFactory);
+
+        try {
+            return redisTemplate.opsForList().rightPop(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * 存值
+     * @param key 键
+     * @param value 值
+     * @return
+     */
+    @SuppressWarnings("resource")
+    public boolean lpush(String key, byte[] value) {
+//        connectionFactory.setDatabase(1);
+//        redisTemplate.setConnectionFactory(connectionFactory);
+
+                try {
+            redisTemplate.opsForList().leftPush(key, value);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 
