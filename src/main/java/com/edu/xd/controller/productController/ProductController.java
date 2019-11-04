@@ -33,7 +33,6 @@ public class ProductController {
     RedisUtils redisUtils;
     @Autowired
     SerializeUtil serializeUtil;
-
     @Autowired
     JedisUtil jedisUtil;
 
@@ -115,20 +114,18 @@ public class ProductController {
     @ApiOperation(value = "获取产品信息（单个产品）")
     public ResponseResult getProductInfo(@RequestParam String productID){
         byte[] bytes = redisUtils.get(productID);
-        Product product = (Product) serializeUtil.unserialize(bytes);
-
-        if (product != null){
+        if (bytes == null){
+            responseResult.setCode(ProductCode.PRODUCT_GETPRODUCTINFO_FAIL.getCode());
+            responseResult.setMessage("查询产品信息失败");
+            responseResult.setSuccess(false);
+        }else {
+            Product product = (Product) serializeUtil.unserialize(bytes);
             responseResult.setCode(ProductCode.PRODUCT_GETPRODUCTINFO_SUCCESS.getCode());
             responseResult.setMessage("查询产品信息成功");
             responseResult.setSuccess(true);
             responseResult.setData(product);
-            return responseResult;
-        }else {
-            responseResult.setCode(ProductCode.PRODUCT_GETPRODUCTINFO_FAIL.getCode());
-            responseResult.setMessage("查询产品信息失败");
-            responseResult.setSuccess(false);
-            return responseResult;
         }
+        return responseResult;
 
     }
 
@@ -138,36 +135,44 @@ public class ProductController {
     @RequestMapping(value = "/product/getAllProductInfo",method = {RequestMethod.GET})
     @ApiOperation(value = "获取产品信息（所有产品）")
     public ResponseResult getAllProductsInfo(){
-        //创建value集合
-        List<Product> values = new ArrayList<>();
 
-        //拿到所有值
-        LinkedHashMap<String ,byte[]> map = redisUtils.getAll();
-        //遍历map
-        for (String key:map.keySet()){
-            Product product = (Product)serializeUtil.unserialize(map.get(key)) ;
-            values.add(product);
-        }
-        //为了前端美观，按照时间排序
-        Collections.sort(values, new Comparator<Product>() {
-            @Override
-            public int compare(Product o1, Product o2) {
-                Date d1 = o1.getCreateTime();
-                Date d2 = o2.getCreateTime();
-                if (d1 == null && d2 == null)
-                    return 0;
-                if (d1 == null)
-                    return -1;
-                if (d2 == null)
-                    return 1;
-                return d1.compareTo(d2);
+        try{
+            //创建value集合
+            List<Product> values = new ArrayList<>();
+
+            //拿到所有值
+            LinkedHashMap<String ,byte[]> map = redisUtils.getAll();
+            //遍历map
+            for (String key:map.keySet()){
+                Product product = (Product)serializeUtil.unserialize(map.get(key)) ;
+                values.add(product);
             }
-        });
+            //为了前端美观，按照时间排序
+            Collections.sort(values, new Comparator<Product>() {
+                @Override
+                public int compare(Product o1, Product o2) {
+                    Date d1 = o1.getCreateTime();
+                    Date d2 = o2.getCreateTime();
+                    if (d1 == null && d2 == null)
+                        return 0;
+                    if (d1 == null)
+                        return -1;
+                    if (d2 == null)
+                        return 1;
+                    return d1.compareTo(d2);
+                }
+            });
 
-        responseResult.setCode(ProductCode.PRODUCT_GETALLPRODUCT_SUCCESS.getCode());
-        responseResult.setMessage("查询所有产品成功");
-        responseResult.setSuccess(true);
-        responseResult.setData(values);
+            responseResult.setCode(ProductCode.PRODUCT_GETALLPRODUCT_SUCCESS.getCode());
+            responseResult.setMessage("查询所有产品成功");
+            responseResult.setSuccess(true);
+            responseResult.setData(values);
+        }catch(Exception e){
+            e.printStackTrace();
+            responseResult.setSuccess(false);
+            responseResult.setMessage(e.getMessage());
+        }
+
 
         return responseResult;
 

@@ -31,7 +31,7 @@ public class SerializeUtil {
 * @param bytes 要反序列化的二进制数
 * @return 反序列化后的对象
 */
-public Object unserialize(byte[] bytes) {
+public Object unserialize (byte[] bytes) {
     try {
             ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             ObjectInputStream ois = new ObjectInputStream(bais);
